@@ -1,0 +1,1 @@
+docker run -e GH_PAT='' -e GH_OWNER='' -e GH_REPOSITORY='' github-runner-gatech:latest

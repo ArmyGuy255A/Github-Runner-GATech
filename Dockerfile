@@ -9,7 +9,7 @@
 FROM ubuntu:20.04
 
 #input GitHub runner version argument
-ARG RUNNER_VERSION
+ARG RUNNER_VERSION=2.299.2
 ENV DEBIAN_FRONTEND=noninteractive
 
 LABEL Author="Phil Dieppa"

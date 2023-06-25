@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# docker build --build-arg RUNNER_VERSION=$RUNNER_VERSION --tag $IMAGE_NAME:$RUNNER_VERSION .
+docker build --build-arg RUNNER_VERSION=$RUNNER_VERSION --tag $DOCKER_REPO:latest --tag $DOCKER_REPO:$RUNNER_VERSION .

@@ -26,3 +26,14 @@
    1. REG_TOKEN='...' -> You need to go to Settings/Developer Settings/Personal Access Token and create a new token with **READ:ORG, REPO**
    2. GH_OWNER='gt-omscs-se-2023summer' 
    3. GH_REPOSITORY='6300Summer23Team127 '
+
+# Managing the Container in Azure
+1. You can use the Azure CLI to manage the container instance
+2. Run the following snippet to manage the container:
+
+```powershell
+az login
+az account set --subscription "4fc243fa-...-...-9c98-793701d13152"
+az container show --resource-group CS6300-GRP --name test-runner
+az container exec --resource-group CS6300-GRP --name gh-runner --exec "/bin/bash"
+```

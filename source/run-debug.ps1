@@ -1,2 +1,2 @@
-docker run -e REG_TOKEN='AAAPN2QN62MC7SIO5EUXH7DDBPUBQ' -e GH_OWNER='pdieppa3' -e GH_REPOSITORY='UMLTest' -it github-runner-gatech:debug  /bin/sh
-# docker run -e GH_TOKEN='AAAPN2VPP3I7DRQFPIFH6FTDBPDOU' -e GH_OWNER='pdieppa3' -e GH_REPOSITORY='UMLTest' -d github-runner-gatech
+docker run -e REG_TOKEN='asdf' -e GH_OWNER='pdieppa3' -e GH_REPOSITORY='UMLTest' -it github-runner-gatech:latest  /bin/sh
+# docker run -e GH_TOKEN='asdf' -e GH_OWNER='pdieppa3' -e GH_REPOSITORY='UMLTest' -d github-runner-gatech

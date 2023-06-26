@@ -88,7 +88,6 @@ RUN . /etc/profile.d/maven.sh
 # Create an Android emulator
 # RUN echo no | avdmanager create avd --name myEmulator --package "system-images;android-30;google_apis;x86_64"
 
-
 # set the entrypoint to the start.sh script
 ENTRYPOINT ["./start.sh"]
 # ENTRYPOINT ["/bin/sh"]

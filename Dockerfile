@@ -65,16 +65,22 @@ RUN curl -o gradle.zip -O -L https://services.gradle.org/distributions/gradle-${
     && unzip gradle.zip -d /opt \
     && rm gradle.zip
 
-# Set Gradle in the PATH
-ENV PATH $PATH:/opt/gradle-${GRADLE_VERSION}/bin
+
 
 # Install Android SDK Command line tools
-# RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
-#     && curl -o android.zip -O -L https://dl.google.com/android/repository/commandlinetools-linux-6858069_latest.zip \
-#     && unzip android.zip -d ${ANDROID_SDK_ROOT} \
-#     && rm android.zip
+RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
+    && curl -o android.zip -O -L https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip \
+    && unzip android.zip -d ${ANDROID_SDK_ROOT} \
+    && rm android.zip \
+    && cd ${ANDROID_SDK_ROOT} \
+    && mkdir latest \
+    && mv bin/ latest/ \
+    && mv lib/ latest/ \
+    && mv NOTICE.txt latest/ \
+    && mv source.properties latest/ \
+    && chown -R docker:docker ${ANDROID_SDK_ROOT}
 
-# ENV PATH $PATH:${ANDROID_SDK_ROOT}/cmdline-tools/bin
+ENV PATH $PATH:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin
 
 # set the user to "docker" so all subsequent commands are run as the docker user
 USER docker
@@ -82,11 +88,17 @@ USER docker
 #Load Maven
 RUN . /etc/profile.d/maven.sh
 
+# Set Gradle in the PATH, but after maven since maven also comes with an older version of gradle.
+ENV PATH /opt/gradle-${GRADLE_VERSION}/bin:$PATH
+
 # Accept Android SDK licenses
-# RUN yes | sdkmanager --licenses
+RUN yes | sdkmanager --licenses
 
 # Install Android SDK packages
-# RUN sdkmanager "platforms;android-30" "build-tools;30.0.2" "emulator" "system-images;android-30;google_apis;x86_64"
+RUN yes | sdkmanager "platforms;android-31" "build-tools;30.0.3" "emulator" "patcher;v4" "platform-tools" "tools"
+
+# Accept all the new licenses
+RUN yes | sdkmanager --licenses
 
 # Create an Android emulator
 # RUN echo no | avdmanager create avd --name myEmulator --package "system-images;android-30;google_apis;x86_64"

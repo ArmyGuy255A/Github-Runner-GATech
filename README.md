@@ -37,3 +37,35 @@ az account set --subscription "4fc243fa-...-...-9c98-793701d13152"
 az container show --resource-group CS6300-GRP --name test-runner
 az container exec --resource-group CS6300-GRP --name gh-runner --exec "/bin/bash"
 ```
+
+# Setting up your first Workflow
+1. You need to create a new workflow file in your repository
+2. Here's an example of an Android workflow:
+
+```yaml
+name: Android CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: [ self-hosted ]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew build
+```
+Explanation: This workflow will run on every push and pull request. It will use the self-hosted runner and will run the following steps:
+1. Checkout the repository
+2. Build the project using Gradle

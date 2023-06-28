@@ -11,7 +11,7 @@ FROM ubuntu:20.04
 #input GitHub runner version argument
 ARG RUNNER_VERSION=2.299.2
 ENV MAVEN_VERSION=3.9.2
-ENV GRADLE_VERSION=8.1.1
+ENV GRADLE_VERSION=7.5
 ENV ANDROID_SDK_ROOT="/usr/lib/android-sdk"
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -26,7 +26,7 @@ RUN apt-get update -y && apt-get upgrade -y
 
 RUN apt-get install -y --no-install-recommends \
     curl nodejs wget unzip vim git azure-cli jq build-essential libssl-dev libffi-dev \
-    python3 python3-venv python3-dev python3-pip zip openjdk-17-jdk pandoc texlive \
+    python3 python3-venv python3-dev python3-pip zip openjdk-17-jdk android-sdk pandoc texlive \
     texlive-xetex lmodern sudo && \
     adduser --disabled-password --gecos '' docker && \
     adduser docker sudo

@@ -15,29 +15,35 @@ GH_URL=https://github.gatech.edu/${GH_OWNER}/${GH_REPOSITORY}
 RUNNER_SUFFIX=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 5 | head -n 1)
 RUNNER_NAME="dockerNode-${RUNNER_SUFFIX}"
 
-# I need an if then statement that will set $REG_TOKEN if the environment variable is null at this point. Otherwise, it needs to run the command directly below.
+cd /home/docker/actions-runner
 
-if [ -z "$REG_TOKEN" ]
+# Check if runner is already registered
+if [ -f ".runner" ]
 then
-    # Set REG_TOKEN here
-    # API ref: https://docs.github.com/en/enterprise-server@3.4/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository
-    REG_TOKEN=$(curl -sX POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${GH_PAT}" https://github.gatech.edu/api/v3/repos/${GH_OWNER}/${GH_REPOSITORY}/actions/runners/registration-token | jq .token --raw-output)
+    echo "Runner already registered. Skipping registration"
 else
-    # Do nothing
-    echo "REG_TOKEN is already set"
+
+    if [ -z "$REG_TOKEN" ]
+    then
+        # Set REG_TOKEN here
+        # API ref: https://docs.github.com/en/enterprise-server@3.4/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository
+        REG_TOKEN=$(curl -sX POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${GH_PAT}" https://github.gatech.edu/api/v3/repos/${GH_OWNER}/${GH_REPOSITORY}/actions/runners/registration-token | jq .token --raw-output)
+    else
+        # Do nothing
+        echo "REG_TOKEN is already set"
+    fi
+    
+
+    echo "Registering runner at URL: ${GH_URL}"
+    ./config.sh --unattended --url ${GH_URL} --token ${REG_TOKEN} --name ${RUNNER_NAME}
+
 fi
 
 
-
-cd /home/docker/actions-runner
-
-echo "Registering runner at URL: ${GH_URL}"
-./config.sh --unattended --url ${GH_URL} --token ${REG_TOKEN} --name ${RUNNER_NAME}
-
-cleanup() {
-    echo "Removing runner..."
-    ./config.sh remove --unattended --token $REG_TOKEN
-}
+# cleanup() {
+#     echo "Removing runner..."
+#     ./config.sh remove --unattended --token $REG_TOKEN
+# }
 
 trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM

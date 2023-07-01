@@ -10,7 +10,7 @@ FROM ubuntu:20.04
 
 #input GitHub runner version argument
 ARG RUNNER_VERSION=2.299.2
-ENV MAVEN_VERSION=3.9.2
+ENV MAVEN_VERSION=3.9.3
 ENV GRADLE_VERSION=7.5
 ENV ANDROID_SDK_ROOT="/usr/lib/android-sdk"
 ENV DEBIAN_FRONTEND=noninteractive
@@ -22,17 +22,18 @@ LABEL BaseImage="ubuntu:20.04"
 LABEL RunnerVersion=${RUNNER_VERSION}
 
 # update the base packages + add a non-sudo user
-RUN apt-get update -y && apt-get upgrade -y
-
+RUN apt-get update -y && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    curl nodejs wget unzip vim git azure-cli jq build-essential libssl-dev libffi-dev
+    
 RUN apt-get install -y --no-install-recommends \
-    curl nodejs wget unzip vim git azure-cli jq build-essential libssl-dev libffi-dev \
     python3 python3-venv python3-dev python3-pip zip openjdk-17-jdk android-sdk pandoc texlive \
-    texlive-xetex lmodern sudo && \
-    adduser --disabled-password --gecos '' docker && \
-    adduser docker sudo
-
+    texlive-xetex lmodern sudo 
+    
 # Add 'docker' to sudoers list without requiring a password
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN adduser --disabled-password --gecos '' docker && \
+    adduser docker sudo && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # cd into the user directory, download and unzip the github actions runner
 # Note: this runner needs to be consistent/compatible with the Enterprise Github server
@@ -41,46 +42,37 @@ RUN cd /home/docker && mkdir actions-runner && cd actions-runner \
     && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 
 # add over the start.sh script
-ADD scripts/start.sh start.sh
+ADD --chmod=+x scripts/start.sh start.sh
 
-# make the script executable
-RUN chmod +x start.sh
+# add maven setup script
+ADD --chmod=+x scripts/maven.sh /etc/profile.d/maven.sh
 
-# install some additional dependencies
+# make the script executable and install some additional dependencies
 RUN chown -R docker ~docker && /home/docker/actions-runner/bin/installdependencies.sh
 
 #Install maven
-RUN cd /root && curl -O -L https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+RUN cd /home/docker && curl -O -L https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
     && tar xzf ./apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt \
     && ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven \
     && rm ./apache*
-
-#Setup maven
-ADD scripts/maven.sh /etc/profile.d/maven.sh
-
-RUN chmod +x /etc/profile.d/maven.sh
 
 #Download Gradle and unzip it in /opt
 RUN curl -o gradle.zip -O -L https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
     && unzip gradle.zip -d /opt \
     && rm gradle.zip
 
-
-
 # Install Android SDK Command line tools
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
     && curl -o android.zip -O -L https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip \
     && unzip android.zip -d ${ANDROID_SDK_ROOT} \
-    && rm android.zip \
-    && cd ${ANDROID_SDK_ROOT} \
-    && mkdir latest \
+    && rm android.zip
+
+RUN cd ${ANDROID_SDK_ROOT}/cmdline-tools \
     && mv bin/ latest/ \
     && mv lib/ latest/ \
     && mv NOTICE.txt latest/ \
     && mv source.properties latest/ \
     && chown -R docker:docker ${ANDROID_SDK_ROOT}
-
-ENV PATH $PATH:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin
 
 # set the user to "docker" so all subsequent commands are run as the docker user
 USER docker
@@ -89,16 +81,13 @@ USER docker
 RUN . /etc/profile.d/maven.sh
 
 # Set Gradle in the PATH, but after maven since maven also comes with an older version of gradle.
-ENV PATH /opt/gradle-${GRADLE_VERSION}/bin:$PATH
+ENV PATH /opt/gradle-${GRADLE_VERSION}/bin:$PATH:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin
 
-# Accept Android SDK licenses
-RUN yes | sdkmanager --licenses
-
-# Install Android SDK packages
-RUN yes | sdkmanager "platforms;android-31" "build-tools;30.0.3" "emulator" "patcher;v4" "platform-tools" "tools"
-
-# Accept all the new licenses
-RUN yes | sdkmanager --licenses
+# Load Maven and Accept Android SDK licenses and install additional packages
+RUN . ./etc/profile.d/maven.sh && \
+    yes | sdkmanager --licenses && \
+    yes | sdkmanager "platforms;android-31" "build-tools;30.0.3" "emulator" "patcher;v4" "platform-tools" "tools" && \
+    yes | sdkmanager --licenses
 
 # Create an Android emulator
 # RUN echo no | avdmanager create avd --name myEmulator --package "system-images;android-30;google_apis;x86_64"

@@ -1,0 +1,33 @@
+apiVersion: '2018-10-01'
+location: <<location>>
+name: <<runnername>>
+type: Microsoft.ContainerInstance/containerGroups
+properties:
+  containers:
+  - name: <<runnername>>
+    properties:
+      image: armyguy255a/github-runner-gatech:latest
+      environmentVariables:
+      - name: REG_TOKEN
+        secureValue: <<reporegtoken>>
+      - name: GH_OWNER
+        value: <<repoowner>>
+      - name: GH_REPOSITORY
+        value: <<reponame>>
+      volumeMounts:
+      - name: <<volumename>>
+        mountPath: /home/docker/actions-runner
+      ports:
+      - port: 80
+      resources:
+        requests:
+          cpu: 2
+          memoryInGb: 4
+  osType: Linux
+  restartPolicy: Always
+  volumes:
+  - name: <<volumename>>
+    azureFile:
+      shareName: <<volumename>>
+      storageAccountName: <<saname>>
+      storageAccountKey: <<sakey>>

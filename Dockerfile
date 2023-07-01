@@ -42,10 +42,14 @@ RUN cd /home/docker && mkdir actions-runner && cd actions-runner \
     && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 
 # add over the start.sh script
-ADD --chmod=+x scripts/start.sh start.sh
+ADD scripts/start.sh start.sh
 
 # add maven setup script
-ADD --chmod=+x scripts/maven.sh /etc/profile.d/maven.sh
+ADD scripts/maven.sh /etc/profile.d/maven.sh
+
+# make the scripts executable
+RUN chmod +x /etc/profile.d/maven.sh && \
+    chmod +x ./start.sh
 
 # make the script executable and install some additional dependencies
 RUN chown -R docker ~docker && /home/docker/actions-runner/bin/installdependencies.sh

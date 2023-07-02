@@ -13,9 +13,9 @@ REG_TOKEN=$REG_TOKEN
 GH_URL=https://github.gatech.edu/${GH_OWNER}/${GH_REPOSITORY}
 
 RUNNER_SUFFIX=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 5 | head -n 1)
-RUNNER_NAME="github-runner-${RUNNER_SUFFIX}"
+RUNNER_NAME="runner-${RUNNER_SUFFIX}"
 
-cd /root/actions-runner
+cd /home/docker/actions-runner
 
 # Check if runner is already registered
 if [ -f ".runner" ]
@@ -35,7 +35,7 @@ else
     
 
     echo "Registering runner at URL: ${GH_URL}"
-    ./config.sh --unattended --url ${GH_URL} --token ${REG_TOKEN} --name ${RUNNER_NAME}
+    sudo -u docker ./config.sh --unattended --url ${GH_URL} --token ${REG_TOKEN} --name ${RUNNER_NAME}
 
 fi
 
@@ -48,4 +48,4 @@ fi
 trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM
 
-./run.sh & wait $!
+sudo -u docker ./run.sh & wait $!

@@ -4,7 +4,7 @@ $deployFilename = $("./azure-deploy{0}.yaml" -f $uid)
 $runnerName = "group-runner" + $uid
 $rgName = "CS6300-GRP"
 $saName = "cs6300grpstorageaccount"
-$repoRegToken = "AAAPN2QGLON5I75G2T3G7F3ET6EU4"
+$repoRegToken = "AAAPN2VEOLMHLMZAKCXV5DLEUDDDI"
 $repoOwner = "pdieppa3"
 $repoName = "gatech-android-app-sample"
 $volumeName = "runner-data" + $uid
@@ -25,4 +25,5 @@ $yaml | Out-File $deployFilename
 # Create the Azure file share
 az storage share create --name $volumeName --account-name $saName --account-key $saKey
 
+# Create the Azure Container Instance
 az container create --resource-group CS6300-GRP --file $deployFilename

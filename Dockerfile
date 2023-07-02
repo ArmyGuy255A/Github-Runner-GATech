@@ -35,16 +35,6 @@ RUN mkdir /actions-runner && cd /actions-runner \
     && curl -O -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz \
     && tar xzf ./actions-runner-linux-x64-${RUNNER_VERSION}.tar.gz
 
-# add over the start.sh script
-ADD scripts/start.sh start.sh
-
-# add maven setup script
-ADD scripts/maven.sh /etc/profile.d/maven.sh
-
-# make the scripts executable
-RUN chmod +x /etc/profile.d/maven.sh && \
-    chmod +x ./start.sh
-
 # install some additional dependencies
 RUN /actions-runner/bin/installdependencies.sh
 
@@ -71,8 +61,15 @@ RUN cd ${ANDROID_SDK_ROOT}/cmdline-tools \
     && mv NOTICE.txt latest/ \
     && mv source.properties latest/
 
-#Load Maven
-RUN . /etc/profile.d/maven.sh
+# add over the start.sh script
+ADD scripts/start.sh start.sh
+
+# add maven setup script
+ADD scripts/maven.sh /etc/profile.d/maven.sh
+
+# make the scripts executable
+RUN chmod +x /etc/profile.d/maven.sh && \
+    chmod +x ./start.sh
 
 # Set Gradle in the PATH, but after maven since maven also comes with an older version of gradle.
 ENV PATH /opt/gradle-${GRADLE_VERSION}/bin:$PATH:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin

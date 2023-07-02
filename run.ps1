@@ -13,5 +13,8 @@ docker run --entrypoint /bin/bash -it --rm -e REG_TOKEN='AAAPN2WZBR3QZJIPCRKU7J3
 
 docker volume create runner-data
 
-docker run -v runner-data:/home/docker/actions-runner --rm -e REG_TOKEN='AAAPN2VEOLMHLMZAKCXV5DLEUDDDI' -e GH_OWNER='pdieppa3' -e GH_REPOSITORY='gatech-android-app-sample' --name github-runner-gatech armyguy255a/github-runner-gatech:latest
+#Group Register Local
+docker run -v runner-data-group:/home/docker/actions-runner -e REG_TOKEN='AAAGRAY44YNVRZBLH7HJLMTEUDSFU' -e GH_OWNER='gt-omscs-se-2023summer' -e GH_REPOSITORY='6300Summer23Team127' --name github-runner-gatech-group armyguy255a/github-runner-gatech:latest
+
+
 docker run -v runner-data:/home/docker/actions-runner -it --rm -e REG_TOKEN='AAAPN2VEOLMHLMZAKCXV5DLEUDDDI' -e GH_OWNER='pdieppa3' -e GH_REPOSITORY='gatech-android-app-sample' --name github-runner-gatech armyguy255a/github-runner-gatech:latest

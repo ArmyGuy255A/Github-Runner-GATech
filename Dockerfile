@@ -95,6 +95,9 @@ RUN . ./etc/profile.d/maven.sh && \
 
 USER root
 
+#TODO: VERIFY!! The docker user environment variables do not include the ANDROID_SDK_ROOT variable. I need to include this at a later time.
+RUN echo "export ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}" >> /home/docker/.bashrc
+
 # set the entrypoint to the start.sh script
 ENTRYPOINT ["./start.sh"]
 # ENTRYPOINT ["/bin/sh"]

@@ -11,7 +11,7 @@ $uid = $(New-Guid).ToString().Substring(0,8)
 $deployFilename = $("./azure-deploy{0}.yaml" -f $uid)
 $runnerName = "runner-" + $uid
 $volumeName = "runner-" + $uid + "-data"
-$saKey = az storage account keys list --resource-group CS6300-GRP --account-name $saName --query "[0].value" --output tsv
+$saKey = az storage account keys list --resource-group $rgName --account-name $saName --query "[0].value" --output tsv
 Write-Host "Found Key: $saKey" -foregroundcolor green
 
 # $yaml = Get-Content ./template-azure-deploy.yaml
@@ -26,7 +26,7 @@ Write-Host "Found Key: $saKey" -foregroundcolor green
 # $yaml | Out-File $deployFilename
 
 # Create the Azure file share
-az storage share delete --name $volumeName --account-name $saName --account-key $saKey
+# az storage share delete --name $volumeName --account-name $saName --account-key $saKey
 az storage share create --name $volumeName --account-name $saName --account-key $saKey
 
 # Create the Azure Container Instance
@@ -42,4 +42,7 @@ az container create `
     --azure-file-volume-account-name $saName `
     --azure-file-volume-account-key $saKey `
     --azure-file-volume-share-name $volumeName `
-    --azure-file-volume-mount-path /home/docker/actions-runner
+    --azure-file-volume-mount-path "/mnt"
+
+
+az container logs --resource-group $rgName --name $runnerName

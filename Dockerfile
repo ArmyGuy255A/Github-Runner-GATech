@@ -85,10 +85,10 @@ USER docker
 ENV PATH /opt/gradle-${GRADLE_VERSION}/bin:$PATH:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin
 
 # Load Maven and Accept Android SDK licenses and install additional packages
-# RUN . ./etc/profile.d/maven.sh && \
-#     yes | sdkmanager --licenses && \
-#     yes | sdkmanager "platforms;android-31" "build-tools;30.0.3" "emulator" "patcher;v4" "platform-tools" "tools" && \
-#     yes | sdkmanager --licenses
+RUN . ./etc/profile.d/maven.sh && \
+    yes | sdkmanager --licenses && \
+    yes | sdkmanager "platforms;android-31" "build-tools;30.0.3" "emulator" "patcher;v4" "platform-tools" "tools" && \
+    yes | sdkmanager --licenses
 
 # Create an Android emulator
 # RUN echo no | avdmanager create avd --name myEmulator --package "system-images;android-30;google_apis;x86_64"
@@ -96,5 +96,5 @@ ENV PATH /opt/gradle-${GRADLE_VERSION}/bin:$PATH:${ANDROID_SDK_ROOT}/cmdline-too
 USER root
 
 # set the entrypoint to the start.sh script
-# ENTRYPOINT ["./start.sh"]
-ENTRYPOINT ["/bin/sh"]
+ENTRYPOINT ["./start.sh"]
+# ENTRYPOINT ["/bin/sh"]

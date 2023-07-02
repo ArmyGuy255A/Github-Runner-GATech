@@ -15,7 +15,7 @@ GH_URL=https://github.gatech.edu/${GH_OWNER}/${GH_REPOSITORY}
 RUNNER_SUFFIX=$(cat /dev/urandom | tr -dc 'a-z0-9' | fold -w 5 | head -n 1)
 RUNNER_NAME="dockerNode-${RUNNER_SUFFIX}"
 
-cd /home/docker/actions-runner
+cd /root/actions-runner
 
 # Check if runner is already registered
 if [ -f ".runner" ]

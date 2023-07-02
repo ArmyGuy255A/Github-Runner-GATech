@@ -96,5 +96,5 @@ ENV PATH /opt/gradle-${GRADLE_VERSION}/bin:$PATH:${ANDROID_SDK_ROOT}/cmdline-too
 USER root
 
 # set the entrypoint to the start.sh script
-ENTRYPOINT ["./start.sh"]
-# ENTRYPOINT ["/bin/sh"]
+# ENTRYPOINT ["./start.sh"]
+ENTRYPOINT ["/bin/sh"]

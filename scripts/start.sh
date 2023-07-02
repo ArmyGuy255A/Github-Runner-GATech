@@ -40,10 +40,9 @@ else
 fi
 
 
-# cleanup() {
-#     echo "Removing runner..."
-#     ./config.sh remove --unattended --token $REG_TOKEN
-# }
+cleanup() {
+    echo "Stopping the runner! Be sure to remove it from the repository manually if you're finished!"
+}
 
 trap 'cleanup; exit 130' INT
 trap 'cleanup; exit 143' TERM

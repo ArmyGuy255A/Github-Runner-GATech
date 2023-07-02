@@ -14,6 +14,9 @@ properties:
         value: <<repoowner>>
       - name: GH_REPOSITORY
         value: <<reponame>>
+      volumeMounts:
+      - name: <<volumename>>
+        mountPath: /home/docker/actions-runner
       ports:
       - port: 80
       resources:
@@ -22,3 +25,9 @@ properties:
           memoryInGb: 4
   osType: Linux
   restartPolicy: Always
+  volumes:
+  - name: <<volumename>>
+    azureFile:
+      shareName: <<volumename>>
+      storageAccountName: <<saname>>
+      storageAccountKey: <<sakey>>
